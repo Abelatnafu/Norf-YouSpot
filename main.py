@@ -19,7 +19,7 @@ async def on_ready():
 @client.command(pass_context=True, aliases=["downyou", "youtube", "spotify", "download"])
 async def youspot(ctx, url: str):
     # delete already existing .mp3 files in the main directory
-    directory = "/Users/abelatnafu/PycharmProjects/Nner"
+    directory = "."
     m3.clean_all_mp3(directory)
 
     ydl_opts = {
@@ -38,22 +38,26 @@ async def youspot(ctx, url: str):
     m3.rename_mp3(directory, infor)
 
     # Try sending file to the discord chat if less that 8MB(Discord size limit)
-    try:
-        await ctx.send(file=discord.File(f"/Users/abelatnafu/PycharmProjects/Nner/{infor['title']}.mp3"))
-    except discord.errors.HTTPException:
-        embedding = discord.Embed(color=0x7289da, title="Invalid file size")
-        embedding.add_field(name="File size limit: 8MB", value="", inline=False)
-        await ctx.send(embed=embedding)
+
 
     # source path
     source = f"{directory}/{infor['title']}.mp3"
     #  destination path
     destination = [f"{directory}/musics",
-                   f"/Users/abelatnafu/Desktop/spotify/{infor['title']}.mp3"]
+                   f"/Users/abelatnafu/Desktop/spotify"]
     # copy all songs to one folder named music to store them
     shutil.copy(source, destination[0])
+    print("Music copied to storage.")
     # move all the songs to my spotify local path
     shutil.move(source, destination[1])
+    print("Muisc moved to spotify local path.")
+    try:
+
+        await ctx.send(file=discord.File(f"{destination[0]}/{infor['title']}.mp3"))
+    except discord.errors.HTTPException:
+        embedding = discord.Embed(color=0x7289da, title="Invalid file size")
+        embedding.add_field(name="File size limit: 8MB", value="", inline=False)
+        await ctx.send(embed=embedding)
 
 
 @client.command()
