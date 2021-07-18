@@ -11,9 +11,11 @@ client = discord.Client()
 client = commands.Bot(command_prefix="+")
 client.remove_command("help")
 
+
 @client.event
 async def on_ready():
     print("Im on.")
+
 
 # Function that downloads a song from youtube and stores it in my spotify local files path
 @client.command(pass_context=True, aliases=["downyou", "youtube", "spotify", "download"])
@@ -36,10 +38,6 @@ async def youspot(ctx, url: str):
 
     # rename the existing dowloaded .mp3 file into the current dowloaded file
     m3.rename_mp3(directory, infor)
-
-    # Try sending file to the discord chat if less that 8MB(Discord size limit)
-
-
     # source path
     source = f"{directory}/{infor['title']}.mp3"
     #  destination path
@@ -51,8 +49,9 @@ async def youspot(ctx, url: str):
     # move all the songs to my spotify local path
     shutil.move(source, destination[1])
     print("Muisc moved to spotify local path.")
-    try:
 
+    # Try sending file to the discord chat if less that 8MB(Discord size limit)
+    try:
         await ctx.send(file=discord.File(f"{destination[0]}/{infor['title']}.mp3"))
     except discord.errors.HTTPException:
         embedding = discord.Embed(color=0x7289da, title="Invalid file size")
